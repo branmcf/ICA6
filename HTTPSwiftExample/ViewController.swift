@@ -15,12 +15,13 @@
 //    ifconfig |grep inet   
 // to see what your public facing IP address is, the ip address can be used here
 //let SERVER_URL = "http://erics-macbook-pro.local:8000" // change this for your server name!!!
-let SERVER_URL = "http://10.8.116.92:8000" // change this for your server name!!!
+//let SERVER_URL = "http://10.8.116.92:8000" // change this for your server name!!!
+let SERVER_URL = "http://10.8.112.246:8000"
 
 import UIKit
 import CoreMotion
 
-class ViewController: UIViewController, URLSessionDelegate {
+class ViewController: UIViewController, URLSessionDelegate, UITextFieldDelegate {
     
     // MARK: Class Properties
     var session = URLSession()
@@ -43,6 +44,7 @@ class ViewController: UIViewController, URLSessionDelegate {
     @IBOutlet weak var downArrow: UILabel!
     @IBOutlet weak var leftArrow: UILabel!
     @IBOutlet weak var largeMotionMagnitude: UIProgressView!
+    @IBOutlet weak var manualDsidInput: UITextField!
     
     // MARK: Class Properties with Observers
     enum CalibrationStage {
@@ -52,6 +54,21 @@ class ViewController: UIViewController, URLSessionDelegate {
         case down
         case left
     }
+    
+    @IBAction func dsidSetManually(_ sender: UITextField) {
+        self.dsid = Int(sender.text!)!
+        
+        self.dsidLabel.text = "Current DSID: \(sender.text)" as String
+    }
+    
+//    if (let textInput = manualDsidInput.text) {
+//        self.dsidLabel.text = textInput
+//    } else {
+//        self.dsidLabel.text = "0"
+//    }
+    
+    
+    
     
     var calibrationStage:CalibrationStage = .notCalibrating {
         didSet{
@@ -254,6 +271,10 @@ class ViewController: UIViewController, URLSessionDelegate {
         startMotionUpdates()
         
         dsid = 2 // set this and it will update UI
+        
+        manualDsidInput.delegate = self
+//        self.manualDsidInput.keyboardType = UIKeyboardType.numberPad
+        
     }
 
     //MARK: Get New Dataset ID
@@ -448,6 +469,10 @@ class ViewController: UIViewController, URLSessionDelegate {
             print("json error: \(error.localizedDescription)")
             return NSDictionary() // just return empty
         }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
 
 }
